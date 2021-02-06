@@ -25,13 +25,27 @@ def genKeys(key):
 
 def genKeyTable(key):
     keyTable = []
+    n = 8
+    subKey = []
 
     # iterate throgh 12 times
-    for i in range(12):
-        shiftedKey = leftRotate(key)
-        copyKey = shiftedKey
-        key = shiftedKey
-        print(hex(int(shiftedKey, 2)))
+    for i in range(3):
+        for j in range(4):
+            shiftedKey = leftRotate(key)
+            copyKey = shiftedKey
+            key = shiftedKey
+
+            block = []
+            for k in range(0, len(key), n):
+                block.append(key[k:k+n])
+            block.reverse()
+            index = 4*0+j
+            subKey.append(block[index])
+
+            #print(hex(int(shiftedKey, 2)))
+
+    t = [''.join(subKey)]
+    print(hex(int(t[0], 2)))
 
 
 def leftRotate(var):
@@ -63,5 +77,3 @@ if __name__ == "__main__":
     print(keyblock)
 
     #test = leftRotate(binarize)
-    for i in range(0, 12):
-        print(i)
