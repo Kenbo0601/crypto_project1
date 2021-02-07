@@ -1,5 +1,5 @@
-
-import itertools
+from operator import xor
+from ftable import table
 
 
 def genWords(txt):
@@ -28,10 +28,13 @@ def genKeys(key):
 
 
 def xor(word, key):
+    # xor word + key: return a list r
     r = []
     for w, k in zip(word, key):
-        print(w, k)
-    return
+        xored = int(w, 2) ^ int(k, 2)
+        binarizedXor = bin(xored)[2:]  # convert from decimal to binary
+        r.append(binarizedXor)
+    return r
 
 
 def genKeyTable(key):
@@ -77,19 +80,36 @@ def leftRotate(var):
     # return hex(p)
 
 
-if __name__ == "__main__":
-    # 1 read plaintext and key from txt file
-    # 2 generate w0 to w4 based on the plaintext
-    # 3 generate keys from k0 to k7
-    # 4 generate 7 subkeys and rotate after
-    plaintext = 0x0123456789abcdef
-    key = 0xabcdef0123456789
-    binarizedWord = "{0:b}".format(plaintext)
-    binarizedKey = "{0:b}".format(key)
-    w = genKeyTable(binarizedKey)
+def F(r0, r1, round, keyTable):
+    # 12 subkeys from keytable
+    return
 
+
+def G():
+    return
+
+
+# driver function
+def driver(plaintxt, key):
+    binarizedWord = bin(plaintxt)[2:]
+    binarizedKey = bin(key)[2:]
+    keyTable = genKeyTable(binarizedKey)
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
-    xor(wordblock, keyblock)
+    r = xor(wordblock, keyblock)
+    print(r)
 
-    #test = leftRotate(binarize)
+
+if __name__ == "__main__":
+    # 1 read plaintext and key from txt file
+    plaintext = 0x0123456789abcdef
+    key = 0xabcdef0123456789
+    driver(plaintext, key)
+    print(hex(table[0]))
+
+    #binarizedWord = "{0:b}".format(plaintext)
+    #binarizedKey = "{0:b}".format(key)
+    #keyTable = genKeyTable(binarizedKey)
+    #wordblock = genWords(binarizedWord)
+    #keyblock = genKeys(binarizedKey)
+    #xor(wordblock, keyblock)
