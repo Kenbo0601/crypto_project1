@@ -1,21 +1,25 @@
 
-#p2 = 0x579bde02468acf13
+import itertools
 
-# return [w0,w1,w2,w3]
+
 def genWords(txt):
     w = []  # store each word block
     n = 16  # size of each word block
 
-    print(txt)
-    for i in range(0, len(txt), n):
-        w.append(txt[i:i+n])
+    if len(txt) < 64:
+        padding = txt.zfill(64)  # fill with 0s if not 64 bits
+        for i in range(0, len(padding), n):
+            w.append(padding[i:i+n])
+    else:
+        for i in range(0, len(txt), n):
+            w.append(txt[i:i+n])
 
     return w
 
 
 def genKeys(key):
     k = []
-    n = 8  # size of each key block
+    n = 16  # size of each key block
 
     for i in range(0, len(key), n):
         k.append(key[i:i+n])
@@ -23,11 +27,18 @@ def genKeys(key):
     return k
 
 
+def xor(word, key):
+    r = []
+    for w, k in zip(word, key):
+        print(w, k)
+    return
+
+
 def genKeyTable(key):
     keyTable = []
     n = 8
 
-    # iterate throgh 12 times
+    # iterate throgh 16 times (all rounds)
     for round in range(16):
         subKey = []
         for i in range(3):
@@ -71,12 +82,14 @@ if __name__ == "__main__":
     # 2 generate w0 to w4 based on the plaintext
     # 3 generate keys from k0 to k7
     # 4 generate 7 subkeys and rotate after
-    plainTxt = 0xabcdef0123456789
-    binarize = "{0:b}".format(plainTxt)
-    w = genKeyTable(binarize)
+    plaintext = 0x0123456789abcdef
+    key = 0xabcdef0123456789
+    binarizedWord = "{0:b}".format(plaintext)
+    binarizedKey = "{0:b}".format(key)
+    w = genKeyTable(binarizedKey)
 
-    wordblock = genWords(binarize)
-    keyblock = genKeys(binarize)
-    print(keyblock)
+    wordblock = genWords(binarizedWord)
+    keyblock = genKeys(binarizedKey)
+    xor(wordblock, keyblock)
 
     #test = leftRotate(binarize)
