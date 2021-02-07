@@ -40,21 +40,15 @@ def genKeyTable(key):
                     block.append(key[k:k+n])
                 block.reverse()
                 index = (4*round+j) % 8
-                print(index)
                 subKey.append(block[index])
 
-                #print(hex(int(shiftedKey, 2)))
-
-        t = [''.join(subKey)]
-        h = hex(int(t[0], 2))
         list = []
-        for s in range(0, len(h), 2):
-            list.append(h[s:s+2])
-        list.pop(0)
+        for c in subKey:
+            h = hex(int(c, 2))
+            list.append(h)
         keyTable.append(list)
 
-        for p in keyTable:
-            print(p)
+    return keyTable
 
 
 def leftRotate(var):
@@ -79,7 +73,7 @@ if __name__ == "__main__":
     # 4 generate 7 subkeys and rotate after
     plainTxt = 0xabcdef0123456789
     binarize = "{0:b}".format(plainTxt)
-    genKeyTable(binarize)
+    w = genKeyTable(binarize)
 
     wordblock = genWords(binarize)
     keyblock = genKeys(binarize)
