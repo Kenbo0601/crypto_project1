@@ -85,7 +85,17 @@ def F(r0, r1, round, keyTable):
     return
 
 
-def G():
+def G(r0, k0, k1, k2, k3, round):
+    spliter = []
+    # split into left 8 bits and right 8 bits
+    for i in range(0, len(r0), 8):
+        spliter.append(r0[i:i+8])
+
+    g1 = spliter[0]
+    g2 = spliter[1]
+    tablelookup1 = int(g2, 2) ^ int(k0, 2)
+    g3 = table[tablelookup1] ^ int(g1, 2)
+    print(g3)
     return
 
 
@@ -97,7 +107,16 @@ def driver(plaintxt, key):
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
     r = xor(wordblock, keyblock)
-    print(r)
+
+    # keytable[round#][loc of hex]
+    k0 = bin(int(keyTable[0][0], 16))[2:]
+    k1 = bin(int(keyTable[0][0], 16))[2:]
+    k2 = bin(int(keyTable[0][0], 16))[2:]
+    k3 = bin(int(keyTable[0][0], 16))[2:]
+    #print(bin(int(k0, 16))[2:])
+    G(r[0], k0, k1, k2, k3, 0)
+    index = str(0x7a)
+    print(hex(table[int(index)]))
 
 
 if __name__ == "__main__":
