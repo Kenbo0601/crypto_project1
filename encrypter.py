@@ -82,10 +82,29 @@ def leftRotate(var):
 
 def F(r0, r1, round, keyTable):
     # 12 subkeys from keytable
+    k0 = bin(int(keyTable[round][0], 16))[2:]
+    k1 = bin(int(keyTable[round][1], 16))[2:]
+    k2 = bin(int(keyTable[round][2], 16))[2:]
+    k3 = bin(int(keyTable[round][3], 16))[2:]
+    k4 = bin(int(keyTable[round][4], 16))[2:]
+    k5 = bin(int(keyTable[round][5], 16))[2:]
+    k6 = bin(int(keyTable[round][6], 16))[2:]
+    k7 = bin(int(keyTable[round][7], 16))[2:]
+    k8 = bin(int(keyTable[round][8], 16))[2:]
+    k9 = bin(int(keyTable[round][9], 16))[2:]
+    k10 = bin(int(keyTable[round][10], 16))[2:]
+    k11 = bin(int(keyTable[round][11], 16))[2:]
+
+    T0 = G(r0, k0, k1, k2, k3)
+    T1 = G(r1, k4, k5, k6, k7)
+    F0 = (T0+2*T1+k8+k9)
+    F1 = (2*T0+T1+k8+k9)
+    print(int(F0, 2) % 16)
+    print(int(F1, 2))
     return
 
 
-def G(r0, k0, k1, k2, k3, round):
+def G(r0, k0, k1, k2, k3):
     spliter = []
     # split into left 8 bits and right 8 bits
     for i in range(0, len(r0), 8):
@@ -95,8 +114,14 @@ def G(r0, k0, k1, k2, k3, round):
     g2 = spliter[1]
     tablelookup1 = int(g2, 2) ^ int(k0, 2)
     g3 = table[tablelookup1] ^ int(g1, 2)
-    print(g3)
-    return
+    tablelookup2 = g3 ^ int(k1, 2)
+    g4 = table[tablelookup2] ^ int(g2, 2)
+    tablelookup3 = g4 ^ int(k2, 2)
+    g5 = table[tablelookup3] ^ g3
+    tablelookup4 = g5 ^ int(k3, 2)
+    g6 = table[tablelookup4] ^ g4
+
+    return bin(g5)[2:]+bin(g6)[2:]  # return concatenation of g5 and g6
 
 
 # driver function
@@ -107,16 +132,30 @@ def driver(plaintxt, key):
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
     r = xor(wordblock, keyblock)
+    F(r[0], r[1], 0, keyTable)
+    '''
+    for round in range(16):
+        newr2 = r[0]
+        newr3 = r[1]
+        f = F(r[0], r[1], round, keyTable)
+        newr0 = f[0] ^ r[2]
+        newr1 = f[1] ^ r[3]
+        r = []
+        r.append(newr0)
+        r.append(newr1)
+        r.append(newr2)
+        r.append(newr3)
+        '''
 
     # keytable[round#][loc of hex]
     k0 = bin(int(keyTable[0][0], 16))[2:]
-    k1 = bin(int(keyTable[0][0], 16))[2:]
-    k2 = bin(int(keyTable[0][0], 16))[2:]
-    k3 = bin(int(keyTable[0][0], 16))[2:]
+    k1 = bin(int(keyTable[0][1], 16))[2:]
+    k2 = bin(int(keyTable[0][2], 16))[2:]
+    k3 = bin(int(keyTable[0][3], 16))[2:]
     #print(bin(int(k0, 16))[2:])
-    G(r[0], k0, k1, k2, k3, 0)
-    index = str(0x7a)
-    print(hex(table[int(index)]))
+    #G(r[0], k0, k1, k2, k3)
+    #index = str(0x7a)
+    # print(hex(table[int(index)]))
 
 
 if __name__ == "__main__":
@@ -124,7 +163,7 @@ if __name__ == "__main__":
     plaintext = 0x0123456789abcdef
     key = 0xabcdef0123456789
     driver(plaintext, key)
-    print(hex(table[0]))
+    # print(hex(table[0]))
 
     #binarizedWord = "{0:b}".format(plaintext)
     #binarizedKey = "{0:b}".format(key)
