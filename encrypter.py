@@ -81,6 +81,7 @@ def leftRotate(var):
 
 
 def F(r0, r1, round, keyTable):
+    result = []
     # 12 subkeys from keytable
     k0 = bin(int(keyTable[round][0], 16))[2:]
     k1 = bin(int(keyTable[round][1], 16))[2:]
@@ -95,13 +96,13 @@ def F(r0, r1, round, keyTable):
     k10 = bin(int(keyTable[round][10], 16))[2:]
     k11 = bin(int(keyTable[round][11], 16))[2:]
 
-    T0 = G(r0, k0, k1, k2, k3)
-    T1 = G(r1, k4, k5, k6, k7)
-    F0 = (T0+2*T1+k8+k9)
-    F1 = (2*T0+T1+k8+k9)
-    print(int(F0, 2) % 16)
-    print(int(F1, 2))
-    return
+    T0 = int(G(r0, k0, k1, k2, k3), 2)
+    T1 = int(G(r1, k4, k5, k6, k7), 2)
+    F0 = (T0+2*T1+int(k8+k9, 2)) % 16
+    F1 = (2*T0+T1+int(k10+k11, 2)) % 16
+    result.append(F0)
+    result.append(F1)
+    return result
 
 
 def G(r0, k0, k1, k2, k3):
@@ -132,28 +133,33 @@ def driver(plaintxt, key):
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
     r = xor(wordblock, keyblock)
-    F(r[0], r[1], 0, keyTable)
-    '''
     for round in range(16):
         newr2 = r[0]
         newr3 = r[1]
         f = F(r[0], r[1], round, keyTable)
-        newr0 = f[0] ^ r[2]
-        newr1 = f[1] ^ r[3]
+        newr0 = bin(f[0] ^ int(r[2], 2))[2:]
+        newr1 = bin(f[1] ^ int(r[3], 2))[2:]
         r = []
         r.append(newr0)
         r.append(newr1)
         r.append(newr2)
         r.append(newr3)
-        '''
 
-    # keytable[round#][loc of hex]
-    k0 = bin(int(keyTable[0][0], 16))[2:]
-    k1 = bin(int(keyTable[0][1], 16))[2:]
-    k2 = bin(int(keyTable[0][2], 16))[2:]
-    k3 = bin(int(keyTable[0][3], 16))[2:]
-    #print(bin(int(k0, 16))[2:])
-    #G(r[0], k0, k1, k2, k3)
+    y0 = r[2]
+    y1 = r[3]
+    y2 = r[0]
+    y3 = r[1]
+
+    c0 = int(y0, 2) ^ int(keyblock[0], 2)
+    c1 = int(y1, 2) ^ int(keyblock[1], 2)
+    c2 = int(y2, 2) ^ int(keyblock[2], 2)
+    c3 = int(y3, 2) ^ int(keyblock[3], 2)
+
+    print(hex(c0))
+    print(hex(c1))
+    print(hex(c2))
+    print(hex(c3))
+
     #index = str(0x7a)
     # print(hex(table[int(index)]))
 
