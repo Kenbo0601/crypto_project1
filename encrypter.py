@@ -59,7 +59,11 @@ def genKeyTable(key):
         list = []
         for c in subKey:
             h = hex(int(c, 2))
-            list.append(h)
+            if len(h[2:]) < 2:
+                addZero = "0x0" + h[2:]
+                list.append(addZero)
+            else:
+                list.append(h)
         keyTable.append(list)
 
     return keyTable
@@ -76,7 +80,7 @@ def leftRotate(var):
 
     t = [''.join(shifter)]
     return t[0]
-    #p = int(t[0], 2)
+    # p = int(t[0], 2)
     # return hex(p)
 
 
@@ -92,14 +96,28 @@ def F(r0, r1, round, keyTable):
     k6 = bin(int(keyTable[round][6], 16))[2:]
     k7 = bin(int(keyTable[round][7], 16))[2:]
     k8 = bin(int(keyTable[round][8], 16))[2:]
-    k9 = bin(int(keyTable[round][9], 16))[2:]
+    #k9 = bin(int(keyTable[round][9], 16))[2:]
+    k9 = keyTable[round][9]
     k10 = bin(int(keyTable[round][10], 16))[2:]
-    k11 = bin(int(keyTable[round][11], 16))[2:]
+    k11 = keyTable[round][11]
+    #k11 = bin(int(keyTable[round][11], 16))[2:]
 
-    T0 = int(G(r0, k0, k1, k2, k3), 2)
-    T1 = int(G(r1, k4, k5, k6, k7), 2)
-    F0 = (T0+2*T1+int(k8+k9, 2)) % 16
-    F1 = (2*T0+T1+int(k10+k11, 2)) % 16
+    T0 = int(G(r0, k0, k1, k2, k3), 16)  # convert from hex to decimal
+    T1 = int(G(r1, k4, k5, k6, k7), 16)
+    print("T0 is : ", hex(T0), ":", T0)
+    print("T1 is : ", hex(T1), ":", T1)
+    #k9temp = hex(int(k9, 2))
+    #k11temp = hex(int(k11, 2))
+    #concat1 = hex(int(k8, 2))+k9temp[2:]
+    concat1 = hex(int(k8, 2))+k9[2:]
+    #concat2 = hex(int(k10, 2))+k11temp[2:]
+    concat2 = hex(int(k10, 2))+k11[2:]
+    print(concat1)
+    print("concat k10 and k11 -> : ", concat2)
+    F0 = (T0+2*T1+int(concat1, 16)) % 65536  # mod 2^16
+    F1 = (2*T0+T1+int(concat2, 16)) % 65536
+    print(hex(F0))
+    print(hex(F1))
     result.append(F0)
     result.append(F1)
     return result
@@ -113,16 +131,23 @@ def G(r0, k0, k1, k2, k3):
 
     g1 = spliter[0]
     g2 = spliter[1]
+    print("g1:", hex(int(g1, 2)))
+    print("g2:", hex(int(g2, 2)))
     tablelookup1 = int(g2, 2) ^ int(k0, 2)
     g3 = table[tablelookup1] ^ int(g1, 2)
+    print("g3:", hex(int(g3)))
     tablelookup2 = g3 ^ int(k1, 2)
     g4 = table[tablelookup2] ^ int(g2, 2)
+    print("g4:", hex(int(g4)))
     tablelookup3 = g4 ^ int(k2, 2)
     g5 = table[tablelookup3] ^ g3
+    print("g5:", hex(int(g5)))
     tablelookup4 = g5 ^ int(k3, 2)
     g6 = table[tablelookup4] ^ g4
+    print("g6:", hex(int(g6)))
 
-    return bin(g5)[2:]+bin(g6)[2:]  # return concatenation of g5 and g6
+    return hex(int(g5)) + hex(int(g6))[2:]
+    # return bin(g5)[2:]+bin(g6)[2:]  # return concatenation of g5 and g6
 
 
 # driver function
@@ -133,15 +158,20 @@ def driver(plaintxt, key):
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
     r = xor(wordblock, keyblock)
+
+    for i in keyTable:
+        print(i)
+
     for round in range(16):
         newr2 = r[0]
         newr3 = r[1]
         f = F(r[0], r[1], round, keyTable)
+        v = bin(f[1])[2:].zfill(16)
         newr0 = bin(f[0] ^ int(r[2], 2))[2:]
         newr1 = bin(f[1] ^ int(r[3], 2))[2:]
         r = []
-        r.append(newr0)
-        r.append(newr1)
+        r.append(newr0.zfill(16))
+        r.append(newr1.zfill(16))
         r.append(newr2)
         r.append(newr3)
 
@@ -155,12 +185,12 @@ def driver(plaintxt, key):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    print(hex(c0))
-    print(hex(c1))
-    print(hex(c2))
-    print(hex(c3))
+    # print(hex(c0))
+    # print(hex(c1))
+    # print(hex(c2))
+    # print(hex(c3))
 
-    #index = str(0x7a)
+    # index = str(0x7a)
     # print(hex(table[int(index)]))
 
 
@@ -171,9 +201,9 @@ if __name__ == "__main__":
     driver(plaintext, key)
     # print(hex(table[0]))
 
-    #binarizedWord = "{0:b}".format(plaintext)
-    #binarizedKey = "{0:b}".format(key)
-    #keyTable = genKeyTable(binarizedKey)
-    #wordblock = genWords(binarizedWord)
-    #keyblock = genKeys(binarizedKey)
-    #xor(wordblock, keyblock)
+    # binarizedWord = "{0:b}".format(plaintext)
+    # binarizedKey = "{0:b}".format(key)
+    # keyTable = genKeyTable(binarizedKey)
+    # wordblock = genWords(binarizedWord)
+    # keyblock = genKeys(binarizedKey)
+    # xor(wordblock, keyblock)
