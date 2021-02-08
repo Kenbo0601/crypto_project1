@@ -183,10 +183,7 @@ def driver(plaintxt, key):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    print(hex(c0))
-    print(hex(c1))
-    print(hex(c2))
-    print(hex(c3))
+    print(hex(c0) + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:])
 
     # index = str(0x7a)
     # print(hex(table[int(index)]))
@@ -194,7 +191,7 @@ def driver(plaintxt, key):
 
 if __name__ == "__main__":
     # 1 read plaintext and key from txt file
-    plaintext = 0x0123456789abcdef
+    plaintext = 0x2ad9c6e5b8fe56fb
     key = 0xabcdef0123456789
     driver(plaintext, key)
     # print(hex(table[0]))

@@ -38,7 +38,7 @@ def xor(word, key):
 
 
 def genKeyTable(key):
-    keyTable = []
+    table = []
     n = 8
 
     # iterate throgh 16 times (all rounds)
@@ -56,17 +56,17 @@ def genKeyTable(key):
                 index = (4*round+j) % 8
                 subKey.append(block[index])
 
-        list = []
+        eachRow = []
         for c in subKey:
             h = hex(int(c, 2))
             if len(h[2:]) < 2:
                 addZero = "0x0" + h[2:]
-                list.append(addZero)
+                eachRow.append(addZero)
             else:
-                list.append(h)
-        keyTable.append(list)
+                eachRow.append(h)
+        table.append(eachRow)
 
-    return keyTable
+    return table
 
 
 def leftRotate(var):
