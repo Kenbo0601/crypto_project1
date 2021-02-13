@@ -166,8 +166,8 @@ def G(r0, k0, k1, k2, k3):
 
 # driver function
 def driver(plaintxt, key):
-    #binarizedWord = bin(0x7365637572697479)[2:]
-    binarizedWord = plain_to_bin(plaintext)
+    #b = bin(0x0123456789abcdef)[2:]
+    binarizedWord = plain_to_bin(plaintxt)
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
     wordblock = genWords(binarizedWord)

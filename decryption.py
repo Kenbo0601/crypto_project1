@@ -191,7 +191,10 @@ def driver(plaintxt, key):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    result = hex(c0) + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
+    result = hex(c0)[2:] + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
+    print("0x"+result)
+    byte_obj = bytes.fromhex(result)
+    print(byte_obj.decode("ascii"))
 
 
 if __name__ == "__main__":
