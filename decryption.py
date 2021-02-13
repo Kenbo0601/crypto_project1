@@ -21,8 +21,13 @@ def genKeys(key):
     k = []
     n = 16  # size of each key block
 
-    for i in range(0, len(key), n):
-        k.append(key[i:i+n])
+    if len(key) < 64:
+        padding = key.zfill(64)
+        for i in range(0, len(padding, n)):
+            k.append(padding[i:i+n])
+    else:
+        for i in range(0, len(key), n):
+            k.append(key[i:i+n])
 
     return k
 
@@ -32,7 +37,8 @@ def xor(word, key):
     r = []
     for w, k in zip(word, key):
         xored = int(w, 2) ^ int(k, 2)
-        binarizedXor = bin(xored)[2:]  # convert from decimal to binary
+        # convert from decimal to binary, padding if necessary
+        binarizedXor = bin(xored)[2:].zfill(16)
         r.append(binarizedXor)
     return r
 
@@ -153,9 +159,10 @@ def G(r0, k0, k1, k2, k3):
 
 # driver function
 def driver(plaintxt, key):
-    binarizedWord = bin(plaintxt)[2:]
-    binarizedKey = bin(key)[2:]
+    binarizedWord = bin(int(plaintxt, 16))[2:]
+    binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
+    keyTable.reverse()
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
     r = xor(wordblock, keyblock)
@@ -190,15 +197,16 @@ def driver(plaintxt, key):
 
 
 if __name__ == "__main__":
-    # 1 read plaintext and key from txt file
-    plaintext = 0x2ad9c6e5b8fe56fb
-    key = 0xabcdef0123456789
-    driver(plaintext, key)
-    # print(hex(table[0]))
+    ciphertext = None
+    key = None
 
-    # binarizedWord = "{0:b}".format(plaintext)
-    # binarizedKey = "{0:b}".format(key)
-    # keyTable = genKeyTable(binarizedKey)
-    # wordblock = genWords(binarizedWord)
-    # keyblock = genKeys(binarizedKey)
-    # xor(wordblock, keyblock)
+    c = open('ciphertext.txt', 'r')
+    ciphertext = c.read()
+    c.close()
+    k = open('key.txt', 'r')
+    key = k.read()
+    k.close()
+
+    i = int(ciphertext, 16)
+    j = int(key, 16)
+    driver(hex(i), hex(j))

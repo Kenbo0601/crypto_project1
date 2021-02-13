@@ -20,9 +20,13 @@ def genWords(txt):
 def genKeys(key):
     k = []
     n = 16  # size of each key block
-
-    for i in range(0, len(key), n):
-        k.append(key[i:i+n])
+    if len(key) < 64:
+        padding = key.zfill(64)
+        for i in range(0, len(padding, n)):
+            k.append(padding[i:i+n])
+    else:
+        for i in range(0, len(key), n):
+            k.append(key[i:i+n])
 
     return k
 
@@ -32,7 +36,8 @@ def xor(word, key):
     r = []
     for w, k in zip(word, key):
         xored = int(w, 2) ^ int(k, 2)
-        binarizedXor = bin(xored)[2:]  # convert from decimal to binary
+        # convert from decimal to binary, padding if necessary
+        binarizedXor = bin(xored)[2:].zfill(16)
         r.append(binarizedXor)
     return r
 
@@ -153,8 +158,8 @@ def G(r0, k0, k1, k2, k3):
 
 # driver function
 def driver(plaintxt, key):
-    binarizedWord = bin(plaintxt)[2:]
-    binarizedKey = bin(key)[2:]
+    binarizedWord = bin(int(plaintxt, 16))[2:]
+    binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
     wordblock = genWords(binarizedWord)
     keyblock = genKeys(binarizedKey)
@@ -183,22 +188,23 @@ def driver(plaintxt, key):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    print(hex(c0) + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:])
-
-    # index = str(0x7a)
-    # print(hex(table[int(index)]))
+    cipher = hex(c0) + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
+    f = open("ciphertext.txt", "w")
+    f.write(cipher)
+    f.close()
 
 
 if __name__ == "__main__":
-    # 1 read plaintext and key from txt file
-    plaintext = 0x0123456789abcdef
-    key = 0xabcdef0123456789
-    driver(plaintext, key)
-    # print(hex(table[0]))
+    plaintext = None
+    key = None
 
-    # binarizedWord = "{0:b}".format(plaintext)
-    # binarizedKey = "{0:b}".format(key)
-    # keyTable = genKeyTable(binarizedKey)
-    # wordblock = genWords(binarizedWord)
-    # keyblock = genKeys(binarizedKey)
-    # xor(wordblock, keyblock)
+    p = open('plaintext.txt', 'r')
+    plaintext = p.read()
+    p.close()
+    k = open('key.txt', 'r')
+    key = k.read()
+    k.close()
+
+    i = int(plaintext, 16)
+    j = int(key, 16)
+    driver(hex(i), hex(j))
