@@ -1,5 +1,14 @@
 from operator import xor
 from ftable import table
+import binascii
+
+
+def plain_to_bin(txt):
+    arr = []
+    for i in txt:
+        temp = ord(i)
+        arr.append(bin(temp)[2:].zfill(8))
+    return "".join(arr)
 
 
 def genWords(txt):
@@ -13,7 +22,6 @@ def genWords(txt):
     else:
         for i in range(0, len(txt), n):
             w.append(txt[i:i+n])
-
     return w
 
 
@@ -101,21 +109,21 @@ def F(r0, r1, round, keyTable):
     k6 = bin(int(keyTable[round][6], 16))[2:]
     k7 = bin(int(keyTable[round][7], 16))[2:]
     k8 = bin(int(keyTable[round][8], 16))[2:]
-    #k9 = bin(int(keyTable[round][9], 16))[2:]
+    # k9 = bin(int(keyTable[round][9], 16))[2:]
     k9 = keyTable[round][9]
     k10 = bin(int(keyTable[round][10], 16))[2:]
     k11 = keyTable[round][11]
-    #k11 = bin(int(keyTable[round][11], 16))[2:]
+    # k11 = bin(int(keyTable[round][11], 16))[2:]
 
     T0 = int(G(r0, k0, k1, k2, k3), 16)  # convert from hex to decimal
     T1 = int(G(r1, k4, k5, k6, k7), 16)
-    #print("T0 is : ", hex(T0), ":", T0)
-    #print("T1 is : ", hex(T1), ":", T1)
-    #k9temp = hex(int(k9, 2))
-    #k11temp = hex(int(k11, 2))
-    #concat1 = hex(int(k8, 2))+k9temp[2:]
+    # print("T0 is : ", hex(T0), ":", T0)
+    # print("T1 is : ", hex(T1), ":", T1)
+    # k9temp = hex(int(k9, 2))
+    # k11temp = hex(int(k11, 2))
+    # concat1 = hex(int(k8, 2))+k9temp[2:]
     concat1 = hex(int(k8, 2))+k9[2:]
-    #concat2 = hex(int(k10, 2))+k11temp[2:]
+    # concat2 = hex(int(k10, 2))+k11temp[2:]
     concat2 = hex(int(k10, 2))+k11[2:]
     F0 = (T0+2*T1+int(concat1, 16)) % 65536  # mod 2^16
     F1 = (2*T0+T1+int(concat2, 16)) % 65536
@@ -158,7 +166,8 @@ def G(r0, k0, k1, k2, k3):
 
 # driver function
 def driver(plaintxt, key):
-    binarizedWord = bin(int(plaintxt, 16))[2:]
+    #binarizedWord = bin(0x7365637572697479)[2:]
+    binarizedWord = plain_to_bin(plaintext)
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
     wordblock = genWords(binarizedWord)
@@ -198,13 +207,12 @@ if __name__ == "__main__":
     plaintext = None
     key = None
 
-    p = open('plaintext.txt', 'r')
-    plaintext = p.read()
+    p = open('p2.txt', 'r')
+    plaintext = p.read().strip('\n')
     p.close()
     k = open('key.txt', 'r')
     key = k.read()
     k.close()
 
-    i = int(plaintext, 16)
     j = int(key, 16)
-    driver(hex(i), hex(j))
+    driver(plaintext, hex(j))
