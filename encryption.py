@@ -178,7 +178,6 @@ def driver(plaintxt, key):
         newr2 = r[0]
         newr3 = r[1]
         f = F(r[0], r[1], round, keyTable)
-        v = bin(f[1])[2:].zfill(16)
         newr0 = bin(f[0] ^ int(r[2], 2))[2:]
         newr1 = bin(f[1] ^ int(r[3], 2))[2:]
         r = []
