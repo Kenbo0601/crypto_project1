@@ -233,6 +233,7 @@ def driver(plaintxt, key):
 
         concat = "".join(result)
         i = hex(int(concat, 16))[2:]
+        print(i)
         byte_obj = bytes.fromhex(i)
         print(byte_obj.decode("ascii"))
 

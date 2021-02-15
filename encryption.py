@@ -8,7 +8,7 @@ def plain_to_bin(txt):
     for i in txt:
         temp = ord(i)
         arr.append(bin(temp)[2:].zfill(8))
-    return "".join(arr)
+    return "".join(arr).zfill(64)
 
 
 def build_64bit_blocks(binarizedWord):
@@ -68,6 +68,7 @@ def genWords(txt):
     else:
         for i in range(0, len(txt), n):
             w.append(txt[i:i+n])
+
     return w
 
 
@@ -222,6 +223,7 @@ def driver(plaintxt, key):
         wordblock = genWords(binarizedWord)
         keyblock = genKeys(binarizedKey)
         r = xor(wordblock, keyblock)
+        print(binarizedWord)
 
         cipher = encryption(r, keyblock, keyTable)
         f = open("ciphertext.txt", "w")
@@ -229,6 +231,7 @@ def driver(plaintxt, key):
         f.close()
     else:  # otherwise separate plaintext and concatenate the results
         bit_blocks = build_64bit_blocks(binarizedWord)
+        print(len(bit_blocks))
         result = []
         for i in range(len(bit_blocks)):
             wordblock = genWords(bit_blocks[i])
@@ -266,6 +269,10 @@ def encryption(r, keyblock, keyTable):
     c1 = int(y1, 2) ^ int(keyblock[1], 2)
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
+    # print(c0)
+    # print(c1)
+    # print(c2)
+    # print(c3)
 
     return hex(c0)[2:] + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
 
