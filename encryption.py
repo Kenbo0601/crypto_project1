@@ -225,12 +225,23 @@ def driver(plaintxt, key):
 
         cipher = encryption(r, keyblock, keyTable)
         f = open("ciphertext.txt", "w")
-        f.write(cipher)
+        f.write("0x"+cipher)
         f.close()
     else:  # otherwise separate plaintext and concatenate the results
-        print("Original")
-        print(binarizedWord)
-        build_64bit_blocks(binarizedWord)
+        bit_blocks = build_64bit_blocks(binarizedWord)
+        result = []
+        for i in range(len(bit_blocks)):
+            wordblock = genWords(bit_blocks[i])
+            keyblock = genKeys(binarizedKey)
+            r = xor(wordblock, keyblock)
+
+            cipher = encryption(r, keyblock, keyTable)
+            result.append(cipher)
+
+        concat = "".join(result)
+        f = open("ciphertext.txt", "w")
+        f.write("0x"+concat)
+        f.close()
 
 
 def encryption(r, keyblock, keyTable):
@@ -256,7 +267,7 @@ def encryption(r, keyblock, keyTable):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    return hex(c0) + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
+    return hex(c0)[2:] + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
 
 
 if __name__ == "__main__":

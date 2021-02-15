@@ -3,6 +3,52 @@ from ftable import table
 import binascii
 
 
+def build_64bit_blocks(binarizedWord):
+    array = []
+    n = 1
+    for i in range(0, len(binarizedWord), n):
+        array.append(binarizedWord[i:i+n])
+    array.reverse()
+
+    reversedBits = "".join(array)
+    array.clear()
+
+    for j in range(0, len(reversedBits), 64):
+        array.append(reversedBits[j:j+64])
+
+    # reverse back array and grab the first element for padding
+    array.reverse()
+    temp = []
+    for k in range(0, len(array[0]), n):
+        temp.append(array[0][k:k+n])
+
+    temp.reverse()
+    letsPadding = "".join(temp)
+    padded = letsPadding.zfill(64)
+
+    # remove the first element, don't need it anymore
+    array.pop(0)
+    restOfBits = "".join(array)
+    array.clear()
+
+    # now need to reverse back the rest of the bits
+    for back in range(0, len(restOfBits), n):
+        array.append(restOfBits[back:back+n])
+    array.reverse()
+    motodouri = "".join(array)
+    array.clear()
+
+    array.append(padded)
+    array.append(motodouri)
+    finalProcess = "".join(array)
+    array.clear()
+
+    for a in range(0, len(finalProcess), 64):
+        array.append(finalProcess[a:a+64])
+
+    return array
+
+
 def genWords(txt):
     w = []  # store each word block
     n = 16  # size of each word block
@@ -164,10 +210,34 @@ def driver(plaintxt, key):
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
     keyTable.reverse()
-    wordblock = genWords(binarizedWord)
-    keyblock = genKeys(binarizedKey)
-    r = xor(wordblock, keyblock)
 
+    if len(binarizedWord) <= 64:
+        wordblock = genWords(binarizedWord)
+        keyblock = genKeys(binarizedKey)
+        r = xor(wordblock, keyblock)
+
+        result = decryption(r, keyblock, keyTable)
+        print("0x"+result)
+        byte_obj = bytes.fromhex(result)
+        print(byte_obj.decode("ascii"))
+    else:
+        bit_blocks = build_64bit_blocks(binarizedWord)
+        result = []
+        for i in range(len(bit_blocks)):
+            wordblock = genWords(bit_blocks[i])
+            keyblock = genKeys(binarizedKey)
+            r = xor(wordblock, keyblock)
+
+            decipher = decryption(r, keyblock, keyTable)
+            result.append(decipher)
+
+        concat = "".join(result)
+        i = hex(int(concat, 16))[2:]
+        byte_obj = bytes.fromhex(i)
+        print(byte_obj.decode("ascii"))
+
+
+def decryption(r, keyblock, keyTable):
     for round in range(16):
         newr2 = r[0]
         newr3 = r[1]
@@ -191,10 +261,7 @@ def driver(plaintxt, key):
     c2 = int(y2, 2) ^ int(keyblock[2], 2)
     c3 = int(y3, 2) ^ int(keyblock[3], 2)
 
-    result = hex(c0)[2:] + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
-    print("0x"+result)
-    byte_obj = bytes.fromhex(result)
-    print(byte_obj.decode("ascii"))
+    return hex(c0)[2:] + hex(c1)[2:] + hex(c2)[2:] + hex(c3)[2:]
 
 
 if __name__ == "__main__":
