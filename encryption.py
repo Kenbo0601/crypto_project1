@@ -216,7 +216,13 @@ def driver(plaintxt, key):
     #b = bin(0x0123456789abcdef)[2:]
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
-    binarizedWord = plain_to_bin(plaintxt)
+
+    if plaintxt[:2] == "0x":
+        i = int(plaintxt, 16)
+        temp = hex(i)
+        binarizedWord = bin(int(temp, 16))[2:]
+    else:
+        binarizedWord = plain_to_bin(plaintxt)
 
     # if the length of plaintext is within 64 bits
     if len(binarizedWord) <= 64:
@@ -281,7 +287,7 @@ if __name__ == "__main__":
     plaintext = None
     key = None
 
-    p = open('p4.txt', 'r')
+    p = open('plaintext.txt', 'r')
     plaintext = p.read().strip('\n')
     p.close()
     k = open('key.txt', 'r')
