@@ -4,10 +4,10 @@ Kenichi Sakamoto
 kenichi2@pdx.edu  
 
 
-Implementation of a block-encryption algorithm called PSU-CRYPT. 
-The encryption algorithm is similar to Feistel Cipher.
+Implementation of a block-encryption algorithm called PSU-CRYPT.    
+The encryption algorithm is similar to Feistel Cipher.   
 
-How to Build:  
+### How to Build:  
 1: python3 encryption.py  
 2: python3 decryption.py  
 
