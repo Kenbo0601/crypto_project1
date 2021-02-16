@@ -22,3 +22,4 @@ The decryption.py reads the ciphertext.txt, then it prints the original message 
   - ftable.py #ftable which is used in both encryption and decryption process
   - plaintext.txt #contains the original message
   - ciphertext.txt #contains the encrypted message
+  - key.txt #contains the key that is used to encrypt the message
