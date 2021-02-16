@@ -287,7 +287,7 @@ if __name__ == "__main__":
     plaintext = None
     key = None
 
-    p = open('plaintext.txt', 'r')
+    p = open('p4.txt', 'r')
     plaintext = p.read().strip('\n')
     p.close()
     k = open('key.txt', 'r')
