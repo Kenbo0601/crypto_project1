@@ -140,8 +140,6 @@ def leftRotate(var):
 
     t = [''.join(shifter)]
     return t[0]
-    # p = int(t[0], 2)
-    # return hex(p)
 
 
 def F(r0, r1, round, keyTable):
@@ -229,7 +227,6 @@ def driver(plaintxt, key):
         wordblock = genWords(binarizedWord)
         keyblock = genKeys(binarizedKey)
         r = xor(wordblock, keyblock)
-        print(binarizedWord)
 
         cipher = encryption(r, keyblock, keyTable)
         f = open("ciphertext.txt", "w")
@@ -237,7 +234,6 @@ def driver(plaintxt, key):
         f.close()
     else:  # otherwise separate plaintext and concatenate the results
         bit_blocks = build_64bit_blocks(binarizedWord)
-        print(len(bit_blocks))
         result = []
         for i in range(len(bit_blocks)):
             wordblock = genWords(bit_blocks[i])
@@ -287,7 +283,7 @@ if __name__ == "__main__":
     plaintext = None
     key = None
 
-    p = open('p4.txt', 'r')
+    p = open('plaintext.txt', 'r')
     plaintext = p.read().strip('\n')
     p.close()
     k = open('key.txt', 'r')

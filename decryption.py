@@ -1,5 +1,6 @@
 from operator import xor
 from ftable import table
+import binascii
 
 
 def build_64bit_blocks(binarizedWord):
@@ -132,8 +133,6 @@ def leftRotate(var):
 
     t = [''.join(shifter)]
     return t[0]
-    # p = int(t[0], 2)
-    # return hex(p)
 
 
 def F(r0, r1, round, keyTable):
@@ -209,16 +208,15 @@ def driver(plaintxt, key):
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
     keyTable.reverse()
+    var = ""
 
     if len(binarizedWord) <= 64:
         wordblock = genWords(binarizedWord)
         keyblock = genKeys(binarizedKey)
         r = xor(wordblock, keyblock)
 
-        result = decryption(r, keyblock, keyTable)
-        print("0x"+result)
-        byte_obj = bytes.fromhex(result)
-        print(byte_obj.decode("ascii"))
+        var = decryption(r, keyblock, keyTable)
+
     else:
         bit_blocks = build_64bit_blocks(binarizedWord)
         result = []
@@ -230,11 +228,15 @@ def driver(plaintxt, key):
             decipher = decryption(r, keyblock, keyTable)
             result.append(decipher)
 
-        concat = "".join(result)
-        i = hex(int(concat, 16))[2:]
-        print(i)
-        byte_obj = bytes.fromhex(i)
-        print(byte_obj.decode("ascii"))
+        var = "".join(result)
+
+    # check if plaintext is in hex
+    f = open("plaintext.txt", "r")
+    check = f.read()[:2]
+    if check == "0x":
+        print("0x"+var)
+    else:  # otherwise convert hex to ascii
+        print(bytearray.fromhex(var).decode())
 
 
 def decryption(r, keyblock, keyTable):
