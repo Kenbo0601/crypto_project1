@@ -1,6 +1,5 @@
 from operator import xor
 from ftable import table
-import binascii
 
 
 def build_64bit_blocks(binarizedWord):
