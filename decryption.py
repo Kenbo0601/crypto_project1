@@ -131,8 +131,7 @@ def leftRotate(var):
     mostSig = shifter.pop(0)
     shifter.append(mostSig)
 
-    t = [''.join(shifter)]
-    return t[0]
+    return ''.join(shifter)
 
 
 def F(r0, r1, round, keyTable):
@@ -147,26 +146,16 @@ def F(r0, r1, round, keyTable):
     k6 = bin(int(keyTable[round][6], 16))[2:]
     k7 = bin(int(keyTable[round][7], 16))[2:]
     k8 = bin(int(keyTable[round][8], 16))[2:]
-    #k9 = bin(int(keyTable[round][9], 16))[2:]
     k9 = keyTable[round][9]
     k10 = bin(int(keyTable[round][10], 16))[2:]
     k11 = keyTable[round][11]
-    #k11 = bin(int(keyTable[round][11], 16))[2:]
 
     T0 = int(G(r0, k0, k1, k2, k3), 16)  # convert from hex to decimal
     T1 = int(G(r1, k4, k5, k6, k7), 16)
-    #print("T0 is : ", hex(T0), ":", T0)
-    #print("T1 is : ", hex(T1), ":", T1)
-    #k9temp = hex(int(k9, 2))
-    #k11temp = hex(int(k11, 2))
-    #concat1 = hex(int(k8, 2))+k9temp[2:]
     concat1 = hex(int(k8, 2))+k9[2:]
-    #concat2 = hex(int(k10, 2))+k11temp[2:]
     concat2 = hex(int(k10, 2))+k11[2:]
     F0 = (T0+2*T1+int(concat1, 16)) % 65536  # mod 2^16
     F1 = (2*T0+T1+int(concat2, 16)) % 65536
-    # print(hex(F0))
-    # print(hex(F1))
     result.append(F0)
     result.append(F1)
     return result
@@ -180,26 +169,20 @@ def G(r0, k0, k1, k2, k3):
 
     g1 = spliter[0]
     g2 = spliter[1]
-    #print("g1:", hex(int(g1, 2)))
-    #print("g2:", hex(int(g2, 2)))
     tablelookup1 = int(g2, 2) ^ int(k0, 2)
     g3 = table[tablelookup1] ^ int(g1, 2)
-    #print("g3:", hex(int(g3)))
     tablelookup2 = g3 ^ int(k1, 2)
     g4 = table[tablelookup2] ^ int(g2, 2)
-    #print("g4:", hex(int(g4)))
     tablelookup3 = g4 ^ int(k2, 2)
     g5 = table[tablelookup3] ^ g3
-    #print("g5:", hex(int(g5)))
     tablelookup4 = g5 ^ int(k3, 2)
     g6 = table[tablelookup4] ^ g4
-    #print("g6:", hex(int(g6)))
+
     check = hex(int(g6))[2:]
     if len(check) < 2:
         return hex(int(g5)) + "0"+check
 
     return hex(int(g5)) + hex(int(g6))[2:]
-    # return bin(g5)[2:]+bin(g6)[2:]  # return concatenation of g5 and g6
 
 
 # driver function
@@ -207,7 +190,7 @@ def driver(plaintxt, key):
     binarizedWord = bin(int(plaintxt, 16))[2:]
     binarizedKey = bin(int(key, 16))[2:]
     keyTable = genKeyTable(binarizedKey)
-    keyTable.reverse()
+    keyTable.reverse()  # reversing the keytable
     var = ""
 
     if len(binarizedWord) <= 64:
@@ -230,6 +213,7 @@ def driver(plaintxt, key):
 
         var = "".join(result)
 
+    print("Decryption completed. The original plaintext is")
     # check if plaintext is in hex
     f = open("plaintext.txt", "r")
     check = f.read()[:2]
@@ -240,6 +224,7 @@ def driver(plaintxt, key):
 
 
 def decryption(r, keyblock, keyTable):
+    # decryption process, total of 16 rounds
     for round in range(16):
         newr2 = r[0]
         newr3 = r[1]

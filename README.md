@@ -11,7 +11,7 @@ The encryption algorithm is similar to Feistel Cipher.
 1: python3 encryption.py  
 2: python3 decryption.py  
 
-The encryption.py reads a standard ascii file called "plaintext.txt" and encrypts the message, this program outputs the file called "ciphertext.txt".
+The encryption.py reads a standard ascii file called "plaintext.txt" and encrypts the message, this program generates the file "ciphertext.txt".
  
 The decryption.py reads the ciphertext.txt, then it prints the original message at the end of the program.
 
